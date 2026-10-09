@@ -22,6 +22,12 @@
         <form method="POST" action="{{ route('warga.laporan.store') }}" enctype="multipart/form-data" class="space-y-5" id="form-laporan">
             @csrf
 
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Judul Laporan *</label>
+                <input type="text" name="judul" value="{{ old('judul') }}" required placeholder="Contoh: Aspal Rusak Berlubang Parah di Depan Puskesmas"
+                       class="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#6C3DE6]/30 focus:border-[#6C3DE6]">
+            </div>
+
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1.5">Kategori *</label>
@@ -78,12 +84,14 @@
                 <div class="grid grid-cols-2 gap-3 mt-3">
                     <div>
                         <label class="text-xs text-gray-500">Latitude</label>
-                        <input type="number" id="lat-display" name="latitude" step="any" readonly value="{{ old('latitude') }}"
+                        <input type="number" id="lat-display" name="latitude" step="any" readonly
+                               value="{{ old('latitude', $initLat) }}"
                                class="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm bg-gray-50 focus:outline-none">
                     </div>
                     <div>
                         <label class="text-xs text-gray-500">Longitude</label>
-                        <input type="number" id="lng-display" name="longitude" step="any" readonly value="{{ old('longitude') }}"
+                        <input type="number" id="lng-display" name="longitude" step="any" readonly
+                               value="{{ old('longitude', $initLng) }}"
                                class="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm bg-gray-50 focus:outline-none">
                     </div>
                 </div>
@@ -171,11 +179,14 @@ const map = L.map('picker-map').setView([-6.9175, 107.6191], 13);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution:'© OSM'}).addTo(map);
 let marker = null;
 
-const initLat = {{ old('latitude', 0) }};
-const initLng = {{ old('longitude', 0) }};
+// Koordinat dari peta atau old() jika ada
+const initLat = {{ old('latitude', $initLat ?? 0) ?: 0 }};
+const initLng = {{ old('longitude', $initLng ?? 0) ?: 0 }};
 if (initLat && initLng) {
     marker = L.marker([initLat, initLng]).addTo(map);
     map.setView([initLat, initLng], 16);
+    document.getElementById('lat-display').value = initLat;
+    document.getElementById('lng-display').value = initLng;
 }
 
 map.on('click', e => {

@@ -19,24 +19,38 @@
             <div class="flex items-start justify-between mb-4">
                 <div>
                     <div class="flex items-center gap-2 mb-1">
-                        <span class="text-2xl">{{ $laporan->kategori?->ikon ?? '📌' }}</span>
-                        <h2 class="text-xl font-bold text-gray-800">{{ $laporan->kategori?->nama_kategori ?? 'Kategori Dihapus' }}</h2>
+                        <span class="text-xs px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-700 font-semibold">{{ $laporan->kategori?->ikon ?? '📌' }} {{ $laporan->kategori?->nama_kategori ?? 'Umum' }}</span>
                     </div>
-                    <p class="text-sm text-gray-500">📍 {{ $laporan->wilayah }} · {{ $laporan->created_at->format('d M Y') }}</p>
+                    <h2 class="text-xl font-bold text-gray-900">{{ $laporan->judul ?? ($laporan->kategori?->nama_kategori ?? 'Laporan #' . $laporan->id) }}</h2>
+                    <p class="text-sm text-gray-500 mt-0.5">📍 {{ $laporan->wilayah }} · Dilaporkan pada {{ $laporan->created_at->format('d M Y, H:i') }} WIB</p>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex flex-col items-end gap-1.5">
                     <span class="px-2.5 py-1 rounded-full text-xs font-semibold
                         {{ $laporan->tingkat_keparahan === 'tinggi' ? 'bg-red-100 text-red-700' : ($laporan->tingkat_keparahan === 'sedang' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700') }}">
-                        {{ ucfirst($laporan->tingkat_keparahan) }}
+                        Keparahan: {{ ucfirst($laporan->tingkat_keparahan) }}
                     </span>
-                    <span class="px-2.5 py-1 rounded-full text-xs font-semibold
-                        {{ $laporan->status === 'diverifikasi' ? 'bg-green-100 text-green-700' : ($laporan->status === 'ditolak' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700') }}">
-                        {{ $laporan->status === 'diverifikasi' ? '✓ Terverifikasi' : ($laporan->status === 'ditolak' ? '✕ Ditolak' : '⏳ Pending') }}
+                    <span class="px-3 py-1 rounded-full text-xs font-bold
+                        {{ $laporan->status == 'pending' ? 'bg-amber-100 text-amber-800' : '' }}
+                        {{ $laporan->status == 'diverifikasi' ? 'bg-blue-100 text-blue-800' : '' }}
+                        {{ $laporan->status == 'diproses' ? 'bg-purple-100 text-purple-800' : '' }}
+                        {{ $laporan->status == 'selesai' ? 'bg-emerald-100 text-emerald-800' : '' }}
+                        {{ $laporan->status == 'ditolak' ? 'bg-rose-100 text-rose-800' : '' }}">
+                        {{ $laporan->status_label }}
                     </span>
                 </div>
             </div>
 
             <p class="text-gray-700 text-sm leading-relaxed mb-6">{{ $laporan->deskripsi }}</p>
+
+            @if($laporan->tindak_lanjut)
+                <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-4 mb-4">
+                    <p class="text-xs font-bold text-indigo-900 uppercase tracking-wider mb-1">📢 Tindak Lanjut Petugas Lapangan:</p>
+                    <p class="text-sm text-indigo-950 leading-relaxed">{{ $laporan->tindak_lanjut }}</p>
+                    @if($laporan->tanggal_selesai)
+                        <p class="text-xs text-emerald-700 font-semibold mt-2">✓ Ditandai selesai pada: {{ $laporan->tanggal_selesai->format('d M Y, H:i') }} WIB</p>
+                    @endif
+                </div>
+            @endif
 
             @if($laporan->status === 'ditolak' && $laporan->verifikasi?->alasan_penolakan)
                 <div class="bg-red-50 border border-red-200 rounded-xl p-4 mb-4">

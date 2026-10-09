@@ -22,6 +22,12 @@
         <form method="POST" action="{{ route('warga.laporan.update', $laporan) }}" enctype="multipart/form-data" class="space-y-5">
             @csrf @method('PUT')
 
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Judul Laporan *</label>
+                <input type="text" name="judul" value="{{ old('judul', $laporan->judul) }}" required
+                       class="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#6C3DE6]/30 focus:border-[#6C3DE6]">
+            </div>
+
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1.5">Kategori *</label>

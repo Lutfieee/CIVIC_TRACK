@@ -6,7 +6,6 @@
 @section('content')
 <div class="flex items-center justify-between mb-6">
     <div>
-        <h2 class="text-xl font-bold text-gray-800">Laporan Saya</h2>
         <p class="text-sm text-gray-500 mt-0.5">Riwayat semua laporan yang Anda kirimkan</p>
     </div>
     <a href="{{ route('warga.laporan.create') }}"
@@ -43,7 +42,10 @@
                     <td class="px-5 py-4">
                         <div class="flex items-center gap-2">
                             <span class="text-lg">{{ $laporan->kategori->ikon }}</span>
-                            <span class="font-medium text-gray-800">{{ $laporan->kategori->nama_kategori }}</span>
+                            <div>
+                                <div class="font-bold text-gray-900 text-sm">{{ $laporan->judul ?? $laporan->kategori->nama_kategori }}</div>
+                                <span class="text-xs text-gray-500">{{ $laporan->kategori->nama_kategori }}</span>
+                            </div>
                         </div>
                     </td>
                     <td class="px-5 py-4 text-gray-600">{{ $laporan->wilayah }}</td>
@@ -60,15 +62,24 @@
                             </span>
                         @elseif($laporan->status_penghapusan === 'ditolak_hapus')
                             <div class="flex flex-col gap-1">
-                                <span class="px-2.5 py-1 rounded-full text-xs font-semibold {{ $laporan->status === 'diverifikasi' ? 'bg-green-100 text-green-700' : ($laporan->status === 'ditolak' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700') }}">
-                                    {{ $laporan->status === 'diverifikasi' ? '✓ Terverifikasi' : ($laporan->status === 'ditolak' ? '✕ Ditolak' : '⏳ Pending') }}
+                                <span class="px-2.5 py-1 rounded-full text-xs font-semibold
+                                    {{ $laporan->status == 'pending' ? 'bg-amber-100 text-amber-800' : '' }}
+                                    {{ $laporan->status == 'diverifikasi' ? 'bg-blue-100 text-blue-800' : '' }}
+                                    {{ $laporan->status == 'diproses' ? 'bg-purple-100 text-purple-800' : '' }}
+                                    {{ $laporan->status == 'selesai' ? 'bg-emerald-100 text-emerald-800' : '' }}
+                                    {{ $laporan->status == 'ditolak' ? 'bg-rose-100 text-rose-800' : '' }}">
+                                    {{ $laporan->status_label }}
                                 </span>
                                 <span class="px-2 py-0.5 rounded text-xs bg-red-50 text-red-500">✕ Hapus Ditolak Admin</span>
                             </div>
                         @else
                             <span class="px-2.5 py-1 rounded-full text-xs font-semibold
-                                {{ $laporan->status === 'diverifikasi' ? 'bg-green-100 text-green-700' : ($laporan->status === 'ditolak' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700') }}">
-                                {{ $laporan->status === 'diverifikasi' ? '✓ Terverifikasi' : ($laporan->status === 'ditolak' ? '✕ Ditolak' : '⏳ Pending') }}
+                                {{ $laporan->status == 'pending' ? 'bg-amber-100 text-amber-800' : '' }}
+                                {{ $laporan->status == 'diverifikasi' ? 'bg-blue-100 text-blue-800' : '' }}
+                                {{ $laporan->status == 'diproses' ? 'bg-purple-100 text-purple-800' : '' }}
+                                {{ $laporan->status == 'selesai' ? 'bg-emerald-100 text-emerald-800' : '' }}
+                                {{ $laporan->status == 'ditolak' ? 'bg-rose-100 text-rose-800' : '' }}">
+                                {{ $laporan->status_label }}
                             </span>
                         @endif
                     </td>

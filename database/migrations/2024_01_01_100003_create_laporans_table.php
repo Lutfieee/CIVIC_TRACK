@@ -18,7 +18,7 @@ return new class extends Migration
             $table->text('deskripsi');
             $table->string('foto')->nullable();
             $table->enum('tingkat_keparahan', ['rendah', 'sedang', 'tinggi'])->default('sedang');
-            $table->enum('status', ['pending', 'diverifikasi', 'ditolak'])->default('pending');
+            $table->enum('status', ['pending', 'diverifikasi', 'diproses', 'selesai', 'ditolak'])->default('pending');
             $table->timestamps();
         });
     }

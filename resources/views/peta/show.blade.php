@@ -18,31 +18,60 @@
         @endif
 
         <div class="p-8">
-            <div class="flex items-start justify-between mb-6">
+            <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
                 <div>
-                    <div class="flex items-center gap-3 mb-2">
-                        <span class="text-3xl">{{ $laporan->kategori->ikon }}</span>
-                        <h1 class="text-2xl font-bold text-gray-900">{{ $laporan->kategori->nama_kategori }}</h1>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-xs px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-700 font-semibold">{{ $laporan->kategori->ikon }} {{ $laporan->kategori->nama_kategori }}</span>
                     </div>
-                    <p class="text-gray-500 text-sm">📍 {{ $laporan->wilayah }} · {{ $laporan->created_at->format('d M Y') }}</p>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">{{ $laporan->judul ?? $laporan->kategori->nama_kategori }}</h1>
+                    <p class="text-gray-500 text-sm mt-1">📍 Wilayah: <strong class="text-gray-700">{{ $laporan->wilayah }}</strong> · Dilaporkan pada {{ $laporan->created_at->format('d M Y, H:i') }} WIB</p>
                 </div>
-                <span class="px-3 py-1.5 rounded-full text-sm font-semibold
-                    {{ $laporan->tingkat_keparahan === 'tinggi' ? 'bg-red-100 text-red-700' : ($laporan->tingkat_keparahan === 'sedang' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700') }}">
-                    {{ ucfirst($laporan->tingkat_keparahan) }}
-                </span>
+                <div class="flex flex-col items-end gap-1.5">
+                    <span class="px-3 py-1 rounded-full text-xs font-bold
+                        {{ $laporan->status == 'pending' ? 'bg-amber-100 text-amber-800' : '' }}
+                        {{ $laporan->status == 'diverifikasi' ? 'bg-blue-100 text-blue-800' : '' }}
+                        {{ $laporan->status == 'diproses' ? 'bg-purple-100 text-purple-800' : '' }}
+                        {{ $laporan->status == 'selesai' ? 'bg-emerald-100 text-emerald-800' : '' }}
+                        {{ $laporan->status == 'ditolak' ? 'bg-rose-100 text-rose-800' : '' }}">
+                        Status: {{ $laporan->status_label }}
+                    </span>
+                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold
+                        {{ $laporan->tingkat_keparahan === 'tinggi' ? 'bg-red-100 text-red-700' : ($laporan->tingkat_keparahan === 'sedang' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700') }}">
+                        Tingkat: {{ ucfirst($laporan->tingkat_keparahan) }}
+                    </span>
+                </div>
             </div>
 
-            <p class="text-gray-700 leading-relaxed mb-8">{{ $laporan->deskripsi }}</p>
+            <p class="text-gray-700 leading-relaxed mb-6">{{ $laporan->deskripsi }}</p>
+
+            @if($laporan->tindak_lanjut)
+                <div class="bg-indigo-50/80 border border-indigo-200 rounded-2xl p-5 mb-8">
+                    <div class="flex items-center gap-2 text-indigo-900 font-bold text-sm mb-1.5">
+                        <span>📢</span> Catatan & Tindak Lanjut Penanganan:
+                    </div>
+                    <p class="text-indigo-950 text-sm leading-relaxed">{{ $laporan->tindak_lanjut }}</p>
+                    @if($laporan->tanggal_selesai)
+                        <div class="mt-2 text-xs text-emerald-700 font-semibold flex items-center gap-1">
+                            <span>✓</span> Selesai ditangani pada: {{ $laporan->tanggal_selesai->format('d M Y, H:i') }} WIB
+                        </div>
+                    @endif
+                </div>
+            @endif
 
             {{-- Mini Map --}}
             <div id="mini-map" class="w-full h-56 rounded-2xl overflow-hidden mb-8 border border-gray-200"></div>
 
             {{-- Reporter Info --}}
-            <div class="bg-gray-50 rounded-2xl p-4 mb-8">
-                <p class="text-sm text-gray-500">Dilaporkan oleh</p>
-                <p class="font-semibold text-gray-800">{{ $laporan->user->name }}</p>
+            <div class="bg-gray-50 rounded-2xl p-4 mb-8 flex items-center justify-between">
+                <div>
+                    <p class="text-xs text-gray-500">Dilaporkan oleh Warga</p>
+                    <p class="font-bold text-gray-800 text-sm">{{ $laporan->user->name }}</p>
+                </div>
                 @if($laporan->verifikasi)
-                    <p class="text-xs text-green-600 mt-1">✓ Diverifikasi oleh {{ $laporan->verifikasi->administrator->name }} pada {{ $laporan->verifikasi->tanggal_verifikasi->format('d M Y') }}</p>
+                    <div class="text-right">
+                        <p class="text-xs text-emerald-700 font-semibold">✓ Diverifikasi oleh Petugas</p>
+                        <p class="text-xs text-gray-400">{{ $laporan->verifikasi->tanggal_verifikasi?->format('d M Y') }}</p>
+                    </div>
                 @endif
             </div>
 

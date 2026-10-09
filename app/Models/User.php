@@ -39,6 +39,16 @@ class User extends Authenticatable
         return $this->hasMany(Komentar::class);
     }
 
+    public function notifikasis()
+    {
+        return $this->hasMany(Notifikasi::class)->latest();
+    }
+
+    public function unreadNotifikasisCount(): int
+    {
+        return $this->notifikasis()->where('is_read', false)->count();
+    }
+
     public function verifikasis()
     {
         return $this->hasMany(Verifikasi::class, Verifikasi::administratorColumn());

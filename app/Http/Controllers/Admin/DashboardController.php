@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Kategori;
 use App\Models\Laporan;
+use App\Models\Transportasi;
 use App\Models\User;
 use App\Models\Verifikasi;
+use App\Models\Wilayah;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -17,7 +20,11 @@ class DashboardController extends Controller
             'total_laporan' => Laporan::count(),
             'pending' => Laporan::where('status', 'pending')->count(),
             'diverifikasi' => Laporan::where('status', 'diverifikasi')->count(),
+            'diproses' => Laporan::where('status', 'diproses')->count(),
+            'selesai' => Laporan::where('status', 'selesai')->count(),
             'ditolak' => Laporan::where('status', 'ditolak')->count(),
+            'total_transportasi' => Transportasi::where('is_active', true)->count(),
+            'total_wilayah' => Wilayah::count(),
             'total_warga' => User::where('role', 'warga')->count(),
             'total_admin' => User::where('role', 'admin')->count(),
         ];
@@ -46,6 +53,41 @@ class DashboardController extends Controller
             ->get();
 
         return view('admin.dashboard', compact('stats', 'perKategori', 'perBulan', 'laporanTerbaru'));
+    }
+
+    /**
+     * Mengelola seluruh laporan yang masuk (FR-12, FR-17, FR-18)
+     */
+    public function kelolaLaporan(Request $request)
+    {
+        $query = Laporan::with(['user', 'kategori']);
+
+        if ($request->filled('q')) {
+            $q = $request->q;
+            $query->where(function ($sub) use ($q) {
+                $sub->where('judul', 'like', "%{$q}%")
+                    ->orWhere('deskripsi', 'like', "%{$q}%")
+                    ->orWhere('wilayah', 'like', "%{$q}%");
+            });
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('kategori_id')) {
+            $query->where('kategori_id', $request->kategori_id);
+        }
+
+        if ($request->filled('wilayah')) {
+            $query->where('wilayah', $request->wilayah);
+        }
+
+        $laporans = $query->latest()->paginate(15)->withQueryString();
+        $kategoris = Kategori::all();
+        $wilayahs = Wilayah::orderBy('nama')->get();
+
+        return view('admin.laporan.index', compact('laporans', 'kategoris', 'wilayahs'));
     }
 
     public function antrian()

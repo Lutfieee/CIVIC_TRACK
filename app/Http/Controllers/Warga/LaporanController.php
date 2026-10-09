@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Warga;
 use App\Http\Controllers\Controller;
 use App\Models\Kategori;
 use App\Models\Laporan;
+use App\Models\Wilayah;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,7 +16,7 @@ class LaporanController extends Controller
 {
     use AuthorizesRequests;
 
-    const KECAMATAN = [
+    const DEFAULT_KECAMATAN = [
         'Andir', 'Antapani', 'Arcamanik', 'Astanaanyar', 'Babakan Ciparay', 
         'Bandung Kidul', 'Bandung Kulon', 'Bandung Wetan', 'Batununggal', 'Bojongloa Kaler',
         'Bojongloa Kidul','Bojongsoang', 'Buahbatu', 'Cibeunying Kaler', 'Cibeunying Kidul', 'Cibiru',
@@ -23,6 +24,12 @@ class LaporanController extends Controller
         'Kiaracondong', 'Lengkong', 'Mandalajati', 'Margacinta', 'Panyileukan',
         'Rancasari', 'Regol', 'Sukajadi', 'Sukasari', 'Sumur Bandung',
     ];
+
+    private function getDaftarWilayah()
+    {
+        $fromDb = Wilayah::pluck('nama')->toArray();
+        return array_unique(array_merge($fromDb, self::DEFAULT_KECAMATAN));
+    }
 
     public function index()
     {
@@ -34,23 +41,30 @@ class LaporanController extends Controller
         return view('warga.laporan.index', compact('laporans'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $kategoris = Kategori::all();
-        $kecamatan = self::KECAMATAN;
-        return view('warga.laporan.create', compact('kategoris', 'kecamatan'));
+        $kecamatan = $this->getDaftarWilayah();
+        $initLat   = $request->query('lat');
+        $initLng   = $request->query('lng');
+        return view('warga.laporan.create', compact('kategoris', 'kecamatan', 'initLat', 'initLng'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
+            'judul' => 'required|string|min:5|max:255',
             'kategori_id' => 'required|exists:kategoris,id',
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
             'wilayah' => 'required|string',
-            'deskripsi' => 'required|string|min:20|max:2000',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
+            'deskripsi' => 'required|string|min:15|max:2000',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
             'tingkat_keparahan' => 'required|in:rendah,sedang,tinggi',
+        ], [
+            'judul.required' => 'Judul laporan wajib diisi.',
+            'kategori_id.required' => 'Kategori permasalahan wajib dipilih.',
+            'deskripsi.required' => 'Deskripsi kejadian wajib diisi minimal 15 karakter.',
         ]);
 
         $fotoPath = null;
@@ -61,6 +75,7 @@ class LaporanController extends Controller
         Laporan::create([
             'user_id' => Auth::id(),
             'kategori_id' => $request->kategori_id,
+            'judul' => $request->judul,
             'latitude' => $request->latitude,
             'longitude' => $request->longitude,
             'wilayah' => $request->wilayah,
@@ -71,7 +86,7 @@ class LaporanController extends Controller
         ]);
 
         return redirect()->route('warga.laporan.index')
-            ->with('success', 'Laporan berhasil dikirim dan menunggu verifikasi.');
+            ->with('success', 'Laporan berhasil dikirim dan kini masuk dalam antrean verifikasi.');
     }
 
     public function show(Laporan $laporan)
@@ -85,7 +100,7 @@ class LaporanController extends Controller
     {
         Gate::authorize('update', $laporan);
         $kategoris = Kategori::all();
-        $kecamatan = self::KECAMATAN;
+        $kecamatan = $this->getDaftarWilayah();
         return view('warga.laporan.edit', compact('laporan', 'kategoris', 'kecamatan'));
     }
 
@@ -94,12 +109,13 @@ class LaporanController extends Controller
         Gate::authorize('update', $laporan);
 
         $request->validate([
+            'judul' => 'required|string|min:5|max:255',
             'kategori_id' => 'required|exists:kategoris,id',
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
             'wilayah' => 'required|string',
-            'deskripsi' => 'required|string|min:20|max:2000',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
+            'deskripsi' => 'required|string|min:15|max:2000',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
             'tingkat_keparahan' => 'required|in:rendah,sedang,tinggi',
         ]);
 
@@ -112,6 +128,7 @@ class LaporanController extends Controller
         }
 
         $laporan->update([
+            'judul' => $request->judul,
             'kategori_id' => $request->kategori_id,
             'latitude' => $request->latitude,
             'longitude' => $request->longitude,
@@ -141,12 +158,10 @@ class LaporanController extends Controller
 
     public function ajukanHapus(Request $request, Laporan $laporan)
     {
-        // Pastikan laporan milik user yang sedang login
         if ($laporan->user_id !== Auth::id()) {
             abort(403);
         }
 
-        // Tidak boleh mengajukan hapus jika sudah dalam proses menunggu
         if ($laporan->isMenungguHapus()) {
             return back()->with('error', 'Permohonan hapus laporan ini sudah diajukan dan sedang menunggu verifikasi admin.');
         }
