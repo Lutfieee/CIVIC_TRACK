@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="SIGAP - Sistem Informasi Geospasial Aman & Peduli Kota Bandung">
-    <title>@yield('title', 'SIGAP') — SIGAP</title>
+    <title>@yield('title', 'SIGAP') — CIVIC TRACK</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -45,6 +45,21 @@
             color: #6C3DE6;
             font-weight: 600;
         }
+        /* Responsif geser konten ke kanan saat sidebar muncul di desktop */
+        #app-content-wrapper {
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        nav.app-top-nav {
+            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @media (min-width: 1024px) {
+            body.sidebar-open #app-content-wrapper {
+                margin-left: 18rem; /* 288px (w-72) */
+            }
+            body.sidebar-open nav.app-top-nav {
+                left: 18rem;
+            }
+        }
     </style>
     @stack('styles')
 </head>
@@ -63,7 +78,7 @@
     <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 flex-shrink-0">
         <a href="{{ route('home') }}" class="flex items-center gap-2.5">
             <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-[#6C3DE6] to-[#3B82F6] flex items-center justify-center text-white font-bold text-sm shadow-md">S</div>
-            <span class="font-bold text-xl bg-gradient-to-r from-[#6C3DE6] to-[#3B82F6] bg-clip-text text-transparent">SIGAP</span>
+            <span class="font-bold text-xl bg-gradient-to-r from-[#6C3DE6] to-[#3B82F6] bg-clip-text text-transparent">CIVIC TRACK</span>
             @auth
                 <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-purple-50 text-[#6C3DE6] capitalize">{{ auth()->user()->role }}</span>
             @endauth
@@ -80,80 +95,91 @@
     {{-- Nav --}}
     <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
         @auth
-            @if(auth()->user()->isAdmin())
-                <p class="px-3 pt-1 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">Menu Admin</p>
+            @if(auth()->user()->isAdminOrDinas())
+                <p class="px-3 pt-1 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                    {{ auth()->user()->isDinas() ? 'Menu Petugas Dinas' : 'Menu Admin' }}
+                </p>
+                @if(auth()->user()->isDinas() && auth()->user()->instansi)
+                    <div class="mx-3 mb-2 px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-100 text-[11px] font-semibold text-blue-700 leading-tight">
+                        🏛️ {{ auth()->user()->instansi }}
+                    </div>
+                @endif
                 <a href="{{ route('admin.dashboard') }}"
                    class="sidebar-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 hover:bg-gray-50 hover:text-[#6C3DE6] transition-all {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                    <span class="text-lg">📊</span><span class="font-medium">Panel Admin</span>
+                    <span class="text-lg"></span><span class="font-medium">Panel Admin</span>
                 </a>
                 <a href="{{ route('admin.laporan.index') }}"
                    class="sidebar-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 hover:bg-gray-50 hover:text-[#6C3DE6] transition-all {{ request()->routeIs('admin.laporan.*') ? 'active' : '' }}">
-                    <span class="text-lg">📁</span><span class="font-medium">Semua Laporan</span>
+                    <span class="text-lg"></span><span class="font-medium">Semua Laporan</span>
                 </a>
                 <a href="{{ route('admin.antrian') }}"
                    class="sidebar-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 hover:bg-gray-50 hover:text-[#6C3DE6] transition-all {{ request()->routeIs('admin.antrian') ? 'active' : '' }}">
-                    <span class="text-lg">⏳</span><span class="font-medium">Antrian Verifikasi</span>
+                    <span class="text-lg"></span><span class="font-medium">Antrian Verifikasi</span>
                 </a>
                 <a href="{{ route('admin.riwayat') }}"
                    class="sidebar-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 hover:bg-gray-50 hover:text-[#6C3DE6] transition-all {{ request()->routeIs('admin.riwayat') ? 'active' : '' }}">
-                    <span class="text-lg">📋</span><span class="font-medium">Riwayat Verifikasi</span>
+                    <span class="text-lg"></span><span class="font-medium">Riwayat Verifikasi</span>
                 </a>
             @else
                 <p class="px-3 pt-1 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">Layanan Warga</p>
+                <a href="{{ route('warga.laporan.cepat') }}"
+                   class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200/80 transition-all mb-1.5 shadow-2xs">
+                    <span>⚡</span><span>Laporan Cepat (1 Mnt)</span>
+                </a>
                 <a href="{{ route('warga.laporan.index') }}"
                    class="sidebar-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 hover:bg-gray-50 hover:text-[#6C3DE6] transition-all {{ request()->routeIs('warga.laporan.index') ? 'active' : '' }}">
-                    <span class="text-lg">📋</span><span class="font-medium">Laporan Saya</span>
+                    <span class="text-lg"></span><span class="font-medium">Laporan Saya</span>
                 </a>
                 <a href="{{ route('warga.laporan.create') }}"
                    class="sidebar-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 hover:bg-gray-50 hover:text-[#6C3DE6] transition-all {{ request()->routeIs('warga.laporan.create') ? 'active' : '' }}">
-                    <span class="text-lg">➕</span><span class="font-medium">Buat Laporan</span>
+                    <span class="text-lg"></span><span class="font-medium">Buat Laporan Baru</span>
                 </a>
             @endif
 
             <p class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">Fitur Publik</p>
             <a href="{{ route('peta.index') }}"
                class="sidebar-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 hover:bg-gray-50 hover:text-[#6C3DE6] transition-all {{ request()->routeIs('peta.*') ? 'active' : '' }}">
-                <span class="text-lg">🗺️</span><span class="font-medium">Peta Masalah</span>
+                <span class="text-lg"></span><span class="font-medium">Peta Masalah</span>
             </a>
             <a href="{{ route('transportasi.index') }}"
                class="sidebar-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 hover:bg-gray-50 hover:text-[#6C3DE6] transition-all {{ request()->routeIs('transportasi.*') ? 'active' : '' }}">
-                <span class="text-lg">🚌</span><span class="font-medium">Transportasi Umum</span>
+                <span class="text-lg"></span><span class="font-medium">Transportasi Umum</span>
             </a>
             <a href="{{ route('informasi-layanan.index') }}"
                class="sidebar-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 hover:bg-gray-50 hover:text-[#6C3DE6] transition-all {{ request()->routeIs('informasi-layanan.*') ? 'active' : '' }}">
-                <span class="text-lg">📖</span><span class="font-medium">Panduan Layanan</span>
+                <span class="text-lg"></span><span class="font-medium">Panduan Layanan</span>
             </a>
             <a href="{{ route('home') }}"
                class="sidebar-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 hover:bg-gray-50 hover:text-[#6C3DE6] transition-all {{ request()->routeIs('home') ? 'active' : '' }}">
-                <span class="text-lg">🏠</span><span class="font-medium">Beranda Publik</span>
+                <span class="text-lg"></span><span class="font-medium">Beranda<span>
             </a>
         @else
             <p class="px-3 pt-1 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">Fitur Publik</p>
             <a href="{{ route('peta.index') }}"
                class="sidebar-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 hover:bg-gray-50 hover:text-[#6C3DE6] transition-all {{ request()->routeIs('peta.*') ? 'active' : '' }}">
-                <span class="text-lg">🗺️</span><span class="font-medium">Peta Masalah</span>
+                <span class="text-lg"></span><span class="font-medium">Peta Masalah</span>
             </a>
             <a href="{{ route('transportasi.index') }}"
                class="sidebar-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 hover:bg-gray-50 hover:text-[#6C3DE6] transition-all {{ request()->routeIs('transportasi.*') ? 'active' : '' }}">
-                <span class="text-lg">🚌</span><span class="font-medium">Transportasi Umum</span>
+                <span class="text-lg"></span><span class="font-medium">Transportasi Umum</span>
             </a>
             <a href="{{ route('informasi-layanan.index') }}"
                class="sidebar-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 hover:bg-gray-50 hover:text-[#6C3DE6] transition-all {{ request()->routeIs('informasi-layanan.*') ? 'active' : '' }}">
-                <span class="text-lg">📖</span><span class="font-medium">Panduan Layanan</span>
+                <span class="text-lg"></span><span class="font-medium">Panduan Layanan</span>
             </a>
             <a href="{{ route('home') }}"
                class="sidebar-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 hover:bg-gray-50 hover:text-[#6C3DE6] transition-all {{ request()->routeIs('home') ? 'active' : '' }}">
-                <span class="text-lg">🏠</span><span class="font-medium">Beranda Publik</span>
+                <span class="text-lg"></span><span class="font-medium">Beranda</span>
             </a>
 
             <p class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">Bergabung</p>
             <a href="{{ route('login') }}"
                class="sidebar-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 hover:bg-gray-50 hover:text-[#6C3DE6] transition-all">
-                <span class="text-lg">🔑</span><span class="font-medium">Masuk</span>
+                <span class="text-lg"></span><span class="font-medium">Masuk</span>
             </a>
             <a href="{{ route('register') }}"
                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-[#6C3DE6] to-[#3B82F6] hover:shadow-md transition-all mt-1">
-                <span class="text-lg">✨</span><span>Daftar Sekarang</span>
+                <span class="text-lg"></span><span>Daftar Sekarang</span>
             </a>
         @endauth
     </nav>
@@ -184,7 +210,7 @@
 </aside>
 
 {{-- ═══════════════ NAVBAR ═══════════════ --}}
-<nav class="fixed top-0 inset-x-0 z-[9900] bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-xs">
+<nav class="app-top-nav fixed top-0 inset-x-0 z-[9900] bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-xs">
     <div class="max-w-screen-2xl mx-auto px-4 sm:px-6">
         <div class="flex items-center justify-between h-16">
 
@@ -200,12 +226,17 @@
                 </button>
                 <a href="{{ route('home') }}" class="flex items-center gap-2">
                     <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-[#6C3DE6] to-[#3B82F6] flex items-center justify-center text-white font-bold text-sm shadow-md">S</div>
-                    <span class="font-bold text-lg bg-gradient-to-r from-[#6C3DE6] to-[#3B82F6] bg-clip-text text-transparent hidden sm:block">SIGAP</span>
+                    <span class="font-bold text-lg bg-gradient-to-r from-[#6C3DE6] to-[#3B82F6] bg-clip-text text-transparent hidden sm:block">CIVIC TRACK</span>
                 </a>
             </div>
 
-            {{-- Kanan: Notif + Profil --}}
+            {{-- Kanan: Notif + Profil + Laporan Cepat --}}
             <div class="flex items-center gap-2 sm:gap-3">
+                <a href="{{ route('warga.laporan.cepat') }}"
+                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-purple-600 text-white text-xs font-bold hover:shadow-md hover:scale-105 transition-all shadow-xs">
+                    <span>⚡</span> <span class="hidden sm:inline">Laporan Cepat</span>
+                </a>
+
                 @auth
                     {{-- Bell Notifikasi --}}
                     <a href="{{ route('notifikasi.index') }}"
@@ -278,7 +309,7 @@
                             @endif
                             <a href="{{ route('home') }}"
                                class="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#6C3DE6] transition-colors">
-                                <span>🏠</span> Beranda SIGAP
+                                <span>🏠</span> Beranda CIVIC TRACK
                             </a>
                             <div class="border-t border-gray-100 my-1"></div>
                             <form method="POST" action="{{ route('logout') }}">
@@ -323,40 +354,42 @@
     <script>setTimeout(function(){var e=document.getElementById('flash-msg');if(e){e.style.opacity='0';e.style.transition='opacity .4s';setTimeout(function(){e.remove();},400);}},4000);</script>
 @endif
 
-<main class="pt-16">
-    @yield('content')
-</main>
+<div id="app-content-wrapper" class="min-h-screen flex flex-col">
+    <main class="pt-16 flex-1">
+        @yield('content')
+    </main>
 
-<footer class="bg-gray-900 text-gray-400 py-12 mt-20">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div>
-                <div class="flex items-center gap-2 mb-3">
-                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#6C3DE6] to-[#3B82F6] flex items-center justify-center text-white font-bold text-sm">S</div>
-                    <span class="font-bold text-white text-lg">SIGAP</span>
+    <footer class="bg-gray-900 text-gray-400 py-12 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <div class="flex items-center gap-2 mb-3">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#6C3DE6] to-[#3B82F6] flex items-center justify-center text-white font-bold text-sm">S</div>
+                        <span class="font-bold text-white text-lg">CIVIC TRACK</span>
+                    </div>
+                    <p class="text-sm leading-relaxed">Sistem Informasi Geospasial Aman & Peduli — platform partisipasi warga untuk kota Bandung yang lebih baik.</p>
                 </div>
-                <p class="text-sm leading-relaxed">Sistem Informasi Geospasial Aman & Peduli — platform partisipasi warga untuk kota Bandung yang lebih baik.</p>
+                <div>
+                    <h4 class="text-white font-semibold mb-3">Navigasi</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="{{ route('home') }}" class="hover:text-white transition-colors">Beranda</a></li>
+                        <li><a href="{{ route('peta.index') }}" class="hover:text-white transition-colors">Peta Kejadian</a></li>
+                        <li><a href="{{ route('transportasi.index') }}" class="hover:text-white transition-colors">Transportasi Umum</a></li>
+                        <li><a href="{{ route('informasi-layanan.index') }}" class="hover:text-white transition-colors">Panduan Layanan</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-3">Kontak</h4>
+                    <p class="text-sm">📧 sigap@bandung.go.id</p>
+                    <p class="text-sm mt-1">🏛️ Pemerintah Kota Bandung</p>
+                </div>
             </div>
-            <div>
-                <h4 class="text-white font-semibold mb-3">Navigasi</h4>
-                <ul class="space-y-2 text-sm">
-                    <li><a href="{{ route('home') }}" class="hover:text-white transition-colors">Beranda</a></li>
-                    <li><a href="{{ route('peta.index') }}" class="hover:text-white transition-colors">Peta Kejadian</a></li>
-                    <li><a href="{{ route('transportasi.index') }}" class="hover:text-white transition-colors">Transportasi Umum</a></li>
-                    <li><a href="{{ route('informasi-layanan.index') }}" class="hover:text-white transition-colors">Panduan Layanan</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="text-white font-semibold mb-3">Kontak</h4>
-                <p class="text-sm">📧 sigap@bandung.go.id</p>
-                <p class="text-sm mt-1">🏛️ Pemerintah Kota Bandung</p>
+            <div class="border-t border-gray-800 mt-8 pt-6 text-center text-xs">
+                &copy; {{ date('Y') }} CIVIC TRACK. Dibuat dengan &#10084;&#65039; untuk warga.
             </div>
         </div>
-        <div class="border-t border-gray-800 mt-8 pt-6 text-center text-xs">
-            &copy; {{ date('Y') }} SIGAP — Kota Bandung. Dibuat dengan &#10084;&#65039; untuk warga.
-        </div>
-    </div>
-</footer>
+    </footer>
+</div>
 
 <script>
 var sidebar = document.getElementById('app-sidebar');
@@ -365,15 +398,23 @@ var overlay = document.getElementById('sidebar-overlay');
 function openSidebar() {
     if (!sidebar) return;
     sidebar.classList.add('open');
+    document.body.classList.add('sidebar-open');
     if (overlay && window.innerWidth < 1024) overlay.classList.add('open');
     localStorage.setItem('sigap_sidebar_state', 'open');
+    setTimeout(function() {
+        window.dispatchEvent(new Event('resize'));
+    }, 320);
 }
 
 function closeSidebar() {
     if (!sidebar) return;
     sidebar.classList.remove('open');
+    document.body.classList.remove('sidebar-open');
     if (overlay) overlay.classList.remove('open');
     localStorage.setItem('sigap_sidebar_state', 'closed');
+    setTimeout(function() {
+        window.dispatchEvent(new Event('resize'));
+    }, 320);
 }
 
 function toggleSidebar() {
@@ -395,6 +436,10 @@ document.addEventListener('DOMContentLoaded', function() {
     var savedState = localStorage.getItem('sigap_sidebar_state');
     if (savedState === 'open' && window.innerWidth >= 1024) {
         if (sidebar) sidebar.classList.add('open');
+        document.body.classList.add('sidebar-open');
+        setTimeout(function() {
+            window.dispatchEvent(new Event('resize'));
+        }, 200);
     }
 });
 

@@ -23,7 +23,14 @@
                         {{ $laporan->kategori->ikon }}
                     </div>
                     <div class="flex-1 min-w-0">
-                        <p class="font-semibold text-gray-800">{{ $laporan->kategori->nama_kategori }}</p>
+                        <div class="flex items-center gap-2">
+                            <p class="font-semibold text-gray-800">{{ $laporan->kategori->nama_kategori }}</p>
+                            @if($laporan->kategori && $laporan->kategori->dinas_terkait)
+                                <span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-medium border border-blue-100">
+                                    🏛️ {{ $laporan->kategori->dinas_terkait }}
+                                </span>
+                            @endif
+                        </div>
                         <p class="text-sm text-gray-500">{{ $laporan->wilayah }}</p>
                         <p class="text-xs text-gray-400 mt-0.5 line-clamp-1">{{ $laporan->deskripsi }}</p>
                     </div>

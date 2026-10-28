@@ -24,9 +24,9 @@ class PetaController extends Controller
      */
     public function data(Request $request)
     {
-        // Tampilkan semua laporan yang sudah diverifikasi, sedang diproses, atau selesai
+        // Tampilkan hanya laporan aktif di peta (diverifikasi dan diproses). Laporan selesai dihilangkan.
         $query = Laporan::with(['kategori', 'user'])
-            ->whereIn('status', ['diverifikasi', 'diproses', 'selesai']);
+            ->whereIn('status', ['diverifikasi', 'diproses']);
 
         if ($request->filled('q')) {
             $q = $request->q;
@@ -60,6 +60,7 @@ class PetaController extends Controller
                 'latitude'         => $laporan->latitude,
                 'longitude'        => $laporan->longitude,
                 'kategori'         => $laporan->kategori->nama_kategori ?? 'Umum',
+                'dinas'            => $laporan->kategori->dinas_terkait ?? null,
                 'warna'            => $laporan->kategori->warna ?? '#6C3DE6',
                 'ikon'             => $laporan->kategori->ikon ?? '📍',
                 'wilayah'          => $laporan->wilayah,

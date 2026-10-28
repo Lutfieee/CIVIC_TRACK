@@ -18,11 +18,12 @@ class KategoriController extends Controller
     {
         $request->validate([
             'nama_kategori' => 'required|string|max:100|unique:kategoris',
+            'dinas_terkait' => 'nullable|string|max:255',
             'ikon' => 'required|string|max:10',
             'warna' => 'required|string|max:20',
         ]);
 
-        Kategori::create($request->only('nama_kategori', 'ikon', 'warna'));
+        Kategori::create($request->only('nama_kategori', 'dinas_terkait', 'ikon', 'warna'));
 
         return back()->with('success', 'Kategori berhasil ditambahkan.');
     }
@@ -31,11 +32,12 @@ class KategoriController extends Controller
     {
         $request->validate([
             'nama_kategori' => 'required|string|max:100|unique:kategoris,nama_kategori,' . $kategori->id,
+            'dinas_terkait' => 'nullable|string|max:255',
             'ikon' => 'required|string|max:10',
             'warna' => 'required|string|max:20',
         ]);
 
-        $kategori->update($request->only('nama_kategori', 'ikon', 'warna'));
+        $kategori->update($request->only('nama_kategori', 'dinas_terkait', 'ikon', 'warna'));
 
         return back()->with('success', 'Kategori berhasil diperbarui.');
     }

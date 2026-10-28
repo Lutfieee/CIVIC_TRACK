@@ -8,10 +8,16 @@
     <div>
         <p class="text-sm text-gray-500 mt-0.5">Riwayat semua laporan yang Anda kirimkan</p>
     </div>
-    <a href="{{ route('warga.laporan.create') }}"
-       class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#6C3DE6] to-[#3B82F6] text-white text-sm font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all">
-        ➕ Buat Laporan
-    </a>
+    <div class="flex items-center gap-2.5">
+        <a href="{{ route('warga.laporan.cepat') }}"
+           class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-purple-600 text-white text-sm font-bold hover:shadow-lg hover:-translate-y-0.5 transition-all shadow-xs">
+            <span>⚡</span> Laporan Cepat (1 Mnt)
+        </a>
+        <a href="{{ route('warga.laporan.create') }}"
+           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#6C3DE6] to-[#3B82F6] text-white text-sm font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all">
+            ➕ Buat Laporan Detail
+        </a>
+    </div>
 </div>
 
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">

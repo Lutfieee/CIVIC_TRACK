@@ -34,7 +34,9 @@
                     <select name="kategori_id" required class="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#6C3DE6]/30 focus:border-[#6C3DE6]">
                         <option value="">Pilih kategori...</option>
                         @foreach($kategoris as $k)
-                            <option value="{{ $k->id }}" {{ old('kategori_id') == $k->id ? 'selected' : '' }}>{{ $k->ikon }} {{ $k->nama_kategori }}</option>
+                            <option value="{{ $k->id }}" {{ old('kategori_id') == $k->id ? 'selected' : '' }}>
+                                {{ $k->ikon }} {{ $k->nama_kategori }} @if($k->dinas_terkait) — 🏛️ {{ $k->dinas_terkait }} @endif
+                            </option>
                         @endforeach
                     </select>
                 </div>

@@ -11,7 +11,7 @@
                 📖 Panduan Layanan Sistem
             </span>
             <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
-                Panduan Penggunaan Layanan SIGAP
+                Panduan Penggunaan Layanan CIVIC TRACK
             </h1>
             <p class="mt-3 text-base text-gray-600">
                 Informasi komprehensif mengenai tata cara pelaporan masalah lingkungan dan fasilitas publik di wilayah kota dan desa, serta panduan pemantauan transportasi umum terpadu.

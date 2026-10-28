@@ -8,6 +8,21 @@
 @endpush
 
 @section('content')
+@if(auth()->user()->isDinas())
+    <div class="mb-6 p-5 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-lg flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+            <div class="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-2xl">🏛️</div>
+            <div>
+                <h2 class="text-lg font-bold">Portal Penanganan: {{ auth()->user()->instansi }}</h2>
+                <p class="text-xs text-white/85 mt-0.5">Dashboard difilter otomatis khusus untuk pemantauan dan penyelesaian laporan di bawah tanggung jawab dinas Anda.</p>
+            </div>
+        </div>
+        <a href="{{ route('admin.antrian') }}" class="px-4 py-2 rounded-xl bg-white text-indigo-700 font-bold text-xs hover:bg-white/90 transition-all shadow">
+            Cek Antrian Verifikasi ({{ $stats['pending'] }}) →
+        </a>
+    </div>
+@endif
+
 {{-- Stat Cards --}}
 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
     @foreach([

@@ -13,13 +13,21 @@
     {{-- Laporan Card --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         @if($laporan->foto)
-            <img src="{{ asset('storage/' . $laporan->foto) }}" class="w-full h-52 object-cover">
+            <div class="bg-gray-900 border-b border-gray-100 flex items-center justify-center max-h-96 overflow-hidden">
+                <img src="{{ asset('storage/' . $laporan->foto) }}" alt="Foto Laporan" class="w-full max-h-96 object-contain"
+                     onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'p-8 text-center text-gray-400 text-sm\'>Foto laporan tidak dapat dimuat atau berkas tidak ditemukan di server.</div>';">
+            </div>
         @endif
         <div class="p-6">
             <div class="flex items-start justify-between mb-4">
                 <div>
-                    <div class="flex items-center gap-2 mb-1">
+                    <div class="flex flex-wrap items-center gap-2 mb-1">
                         <span class="text-xs px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-700 font-semibold">{{ $laporan->kategori?->ikon ?? '📌' }} {{ $laporan->kategori?->nama_kategori ?? 'Umum' }}</span>
+                        @if($laporan->kategori?->dinas_terkait)
+                            <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 font-semibold border border-blue-100">
+                                🏛️ {{ $laporan->kategori->dinas_terkait }}
+                            </span>
+                        @endif
                     </div>
                     <h2 class="text-xl font-bold text-gray-900">{{ $laporan->judul ?? ($laporan->kategori?->nama_kategori ?? 'Laporan #' . $laporan->id) }}</h2>
                     <p class="text-sm text-gray-500 mt-0.5">📍 {{ $laporan->wilayah }} · Dilaporkan pada {{ $laporan->created_at->format('d M Y, H:i') }} WIB</p>

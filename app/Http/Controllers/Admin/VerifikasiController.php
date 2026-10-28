@@ -126,7 +126,11 @@ class VerifikasiController extends Controller
             'pesan' => 'Laporan "' . ($laporan->judul ?? 'Laporan #' . $laporan->id) . '" statusnya kini ' . ($statusLabels[$validated['status']] ?? $validated['status']) . ($validated['tindak_lanjut'] ? '. Catatan: ' . $validated['tindak_lanjut'] : ''),
         ]);
 
-        return back()->with('success', 'Status dan tindak lanjut laporan berhasil diperbarui!');
+        if ($request->filled('redirect_to')) {
+            return redirect($request->redirect_to)->with('success', 'Status dan tindak lanjut laporan #' . $laporan->id . ' berhasil diperbarui!');
+        }
+
+        return redirect()->route('admin.antrian')->with('success', 'Status dan tindak lanjut laporan #' . $laporan->id . ' berhasil diperbarui!');
     }
 
     public function approveDelete(Laporan $laporan)

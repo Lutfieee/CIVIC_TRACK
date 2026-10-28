@@ -21,6 +21,10 @@ class AuthController extends Controller
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
+        ], [
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'password.required' => 'Password wajib diisi.',
         ]);
 
         $credentials = $request->only('email', 'password');
@@ -36,7 +40,7 @@ class AuthController extends Controller
             }
 
             return match($user->role) {
-                'admin' => redirect()->route('admin.dashboard'),
+                'admin', 'dinas' => redirect()->route('admin.dashboard'),
                 default => redirect()->route('warga.laporan.index'),
             };
         }
@@ -55,8 +59,16 @@ class AuthController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'email' => 'required|string|email|max:255|unique:users,email',
             'password' => ['required', 'confirmed', Password::min(8)],
+        ], [
+            'name.required' => 'Nama lengkap wajib diisi.',
+            'email.required' => 'Alamat email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email ini sudah terdaftar. Silakan gunakan email lain atau masuk ke akun Anda.',
+            'password.required' => 'Password wajib diisi.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok dengan password yang dimasukkan.',
+            'password.min' => 'Password minimal harus terdiri dari 8 karakter.',
         ]);
 
         $user = User::create([
@@ -67,7 +79,6 @@ class AuthController extends Controller
             'is_active' => true,
         ]);
 
-        // Jangan langsung login, arahkan ke halaman login
         return redirect()->route('login')->with('success', 'Akun berhasil dibuat! Silakan masuk dengan email dan kata sandi Anda.');
     }
 

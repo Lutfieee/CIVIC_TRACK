@@ -27,6 +27,16 @@
                        class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#6C3DE6]/30 focus:border-[#6C3DE6]">
             </div>
 
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">Dinas / OPD Terkait</label>
+                <select name="dinas_terkait" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#6C3DE6]/30 focus:border-[#6C3DE6] bg-white">
+                    <option value="">-- Pilih Dinas Terkait --</option>
+                    @foreach(\App\Models\Kategori::DINAS_LIST as $dinas)
+                        <option value="{{ $dinas }}" {{ old('dinas_terkait') == $dinas ? 'selected' : '' }}>{{ $dinas }}</option>
+                    @endforeach
+                </select>
+            </div>
+
             <div class="grid grid-cols-2 gap-3">
                 <div>
                     <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">Ikon Terpilih *</label>
@@ -92,12 +102,19 @@
                                         <h4 class="font-bold text-gray-800 text-base">{{ $kategori->nama_kategori }}</h4>
                                         <span class="inline-block w-3 h-3 rounded-full border border-white shadow-sm" style="background: {{ $kategori->warna }}"></span>
                                     </div>
-                                    <p class="text-xs text-gray-400 mt-0.5">{{ $kategori->laporans_count }} laporan terkait · Kode Warna: <code class="font-mono text-gray-600">{{ $kategori->warna }}</code></p>
+                                    <div class="flex flex-wrap items-center gap-2 mt-1">
+                                        @if($kategori->dinas_terkait)
+                                            <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 font-semibold border border-blue-100">
+                                                🏛️ {{ $kategori->dinas_terkait }}
+                                            </span>
+                                        @endif
+                                        <span class="text-xs text-gray-400">{{ $kategori->laporans_count }} laporan terkait</span>
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="flex items-center gap-2">
-                                <button onclick="openEditModal({{ $kategori->id }}, '{{ addslashes($kategori->nama_kategori) }}', '{{ $kategori->ikon }}', '{{ $kategori->warna }}')"
+                                <button onclick="openEditModal({{ $kategori->id }}, '{{ addslashes($kategori->nama_kategori) }}', '{{ $kategori->ikon }}', '{{ $kategori->warna }}', '{{ addslashes($kategori->dinas_terkait ?? '') }}')"
                                         class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors">
                                     Edit
                                 </button>
@@ -132,6 +149,16 @@
                 <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">Nama Kategori *</label>
                 <input type="text" id="edit-nama" name="nama_kategori" required
                        class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#6C3DE6]/30 focus:border-[#6C3DE6]">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">Dinas / OPD Terkait</label>
+                <select id="edit-dinas" name="dinas_terkait" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#6C3DE6]/30 focus:border-[#6C3DE6] bg-white">
+                    <option value="">-- Pilih Dinas Terkait --</option>
+                    @foreach(\App\Models\Kategori::DINAS_LIST as $dinas)
+                        <option value="{{ $dinas }}">{{ $dinas }}</option>
+                    @endforeach
+                </select>
             </div>
 
             <div class="grid grid-cols-2 gap-3">
@@ -190,11 +217,12 @@ function selectEmoji(inputId, emoji) {
     }
 }
 
-function openEditModal(id, nama, ikon, warna) {
+function openEditModal(id, nama, ikon, warna, dinas = '') {
     const modal = document.getElementById('edit-modal');
     const form = document.getElementById('edit-form');
     form.action = `/admin/kategori/${id}`;
     document.getElementById('edit-nama').value = nama;
+    document.getElementById('edit-dinas').value = dinas;
     document.getElementById('edit-ikon').value = ikon;
     document.getElementById('edit-warna').value = warna;
     document.getElementById('edit-color-picker').value = warna;

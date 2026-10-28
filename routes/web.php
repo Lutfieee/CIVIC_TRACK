@@ -70,6 +70,10 @@ Route::middleware('auth')->group(function () {
 // 4. Role: Warga
 // ─────────────────────────────────────────────────────────────
 Route::middleware(['auth', 'role:warga'])->prefix('warga')->name('warga.')->group(function () {
+    // Fitur Laporan Cepat (1 Menit)
+    Route::get('laporan/cepat', [LaporanController::class, 'cepat'])->name('laporan.cepat');
+    Route::post('laporan/cepat', [LaporanController::class, 'storeCepat'])->name('laporan.store-cepat');
+
     Route::resource('laporan', LaporanController::class);
     Route::post('laporan/{laporan}/komentar', [KomentarController::class, 'store'])->name('komentar.store');
     Route::post('laporan/{laporan}/ajukan-hapus', [LaporanController::class, 'ajukanHapus'])->name('laporan.ajukan-hapus');
@@ -77,9 +81,9 @@ Route::middleware(['auth', 'role:warga'])->prefix('warga')->name('warga.')->grou
 });
 
 // ─────────────────────────────────────────────────────────────
-// 5. Role: Admin
+// 5. Role: Admin / Pemerintah & Dinas Terkait
 // ─────────────────────────────────────────────────────────────
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'role:admin,dinas'])->prefix('admin')->name('admin.')->group(function () {
     // Dashboard Utama Analitik
     Route::get('/', [AdminDashboard::class, 'index'])->name('dashboard');
 

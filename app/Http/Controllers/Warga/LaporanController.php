@@ -41,6 +41,58 @@ class LaporanController extends Controller
         return view('warga.laporan.index', compact('laporans'));
     }
 
+    public function cepat(Request $request)
+    {
+        $kategoris = Kategori::all();
+        $kecamatan = $this->getDaftarWilayah();
+        $initLat   = $request->query('lat', -6.9175);
+        $initLng   = $request->query('lng', 107.6191);
+        return view('warga.laporan.cepat', compact('kategoris', 'kecamatan', 'initLat', 'initLng'));
+    }
+
+    public function storeCepat(Request $request)
+    {
+        $request->validate([
+            'kategori_id' => 'required|exists:kategoris,id',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'wilayah' => 'nullable|string',
+            'deskripsi' => 'required|string|min:5|max:1000',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'tingkat_keparahan' => 'nullable|in:rendah,sedang,tinggi',
+        ], [
+            'kategori_id.required' => 'Silakan pilih salah satu kategori permasalahan.',
+            'deskripsi.required' => 'Keterangan singkat kejadian wajib diisi.',
+            'latitude.required' => 'Titik lokasi belum ditentukan.',
+            'longitude.required' => 'Titik lokasi belum ditentukan.',
+        ]);
+
+        $kategori = Kategori::findOrFail($request->kategori_id);
+        $wilayah = $request->wilayah ?: 'Kabupaten Bandung';
+        $judul = $request->filled('judul') ? $request->judul : ($kategori->nama_kategori . ' di ' . $wilayah);
+
+        $fotoPath = null;
+        if ($request->hasFile('foto')) {
+            $fotoPath = $request->file('foto')->store('fotos', 'public');
+        }
+
+        Laporan::create([
+            'user_id' => Auth::id(),
+            'kategori_id' => $kategori->id,
+            'judul' => $judul,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
+            'wilayah' => $wilayah,
+            'deskripsi' => $request->deskripsi,
+            'foto' => $fotoPath,
+            'tingkat_keparahan' => $request->tingkat_keparahan ?: 'sedang',
+            'status' => 'pending',
+        ]);
+
+        return redirect()->route('warga.laporan.index')
+            ->with('success', '⚡ Laporan Cepat Anda berhasil dikirim dan otomatis masuk dalam antrean verifikasi!');
+    }
+
     public function create(Request $request)
     {
         $kategoris = Kategori::all();

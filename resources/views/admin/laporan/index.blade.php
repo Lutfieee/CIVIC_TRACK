@@ -92,9 +92,16 @@
                             </td>
                             <td class="px-5 py-4">
                                 <div class="font-bold text-gray-900 text-sm mb-0.5">{{ $item->judul ?? 'Laporan #' . $item->id }}</div>
-                                <span class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">
-                                    {{ $item->kategori->ikon ?? '' }} {{ $item->kategori->nama_kategori ?? 'Umum' }}
-                                </span>
+                                <div class="flex flex-wrap items-center gap-1 mt-1">
+                                    <span class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">
+                                        {{ $item->kategori->ikon ?? '' }} {{ $item->kategori->nama_kategori ?? 'Umum' }}
+                                    </span>
+                                    @if($item->kategori && $item->kategori->dinas_terkait)
+                                        <span class="inline-flex items-center gap-0.5 text-[10px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-medium border border-blue-100">
+                                            🏛️ {{ $item->kategori->dinas_terkait }}
+                                        </span>
+                                    @endif
+                                </div>
                             </td>
                             <td class="px-5 py-4">
                                 <span class="font-medium text-gray-900">{{ $item->user->name ?? 'Warga' }}</span><br>

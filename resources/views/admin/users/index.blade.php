@@ -50,9 +50,14 @@
                 <td class="px-5 py-4 text-gray-500">{{ $user->email }}</td>
                 <td class="px-5 py-4">
                     <span class="px-2.5 py-1 rounded-full text-xs font-semibold
-                        {{ $user->role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-700' }}">
-                        {{ ucfirst($user->role) }}
+                        {{ $user->role === 'admin' ? 'bg-purple-100 text-purple-700' : ($user->role === 'dinas' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700') }}">
+                        {{ $user->role === 'dinas' ? 'Petugas Dinas' : ucfirst($user->role) }}
                     </span>
+                    @if($user->instansi)
+                        <p class="text-[10px] text-blue-600 font-medium mt-1 truncate max-w-[200px]" title="{{ $user->instansi }}">
+                            🏛️ {{ $user->instansi }}
+                        </p>
+                    @endif
                 </td>
                 <td class="px-5 py-4">
                     <span class="px-2.5 py-1 rounded-full text-xs font-semibold {{ $user->is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">

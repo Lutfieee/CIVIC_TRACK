@@ -83,34 +83,42 @@ class DatabaseSeeder extends Seeder
         // 3. Kategori Laporan (SDG 11 Focus)
         // ──────────────────────────────
         $katMacet = Kategori::firstOrCreate(['nama_kategori' => 'Lalu Lintas / Kemacetan'], [
+            'dinas_terkait' => 'Dinas Perhubungan Kabupaten Bandung',
             'ikon' => '🚦',
             'warna' => '#8B5CF6',
         ]);
 
         $katBanjir = Kategori::firstOrCreate(['nama_kategori' => 'Banjir & Genangan Air'], [
+            'dinas_terkait' => 'Badan Penanggulangan Bencana Daerah (BPBD)',
             'ikon' => '🌊',
             'warna' => '#3B82F6',
         ]);
 
         $katPermukiman = Kategori::firstOrCreate(['nama_kategori' => 'Kawasan Padat / Kumuh'], [
+            'dinas_terkait' => 'Dinas Pekerjaan Umum dan Tata Ruang (DPUTR) Kabupaten Bandung',
             'ikon' => '🏘️',
             'warna' => '#10B981',
         ]);
 
         $katJalan = Kategori::firstOrCreate(['nama_kategori' => 'Jalan Rusak / Berlubang'], [
+            'dinas_terkait' => 'Dinas Pekerjaan Umum dan Tata Ruang (DPUTR) Kabupaten Bandung',
             'ikon' => '🕳️',
             'warna' => '#EF4444',
         ]);
 
         $katSampah = Kategori::firstOrCreate(['nama_kategori' => 'Sampah Liar'], [
+            'dinas_terkait' => 'Dinas Lingkungan Hidup Kabupaten Bandung',
             'ikon' => '🗑️',
             'warna' => '#F59E0B',
         ]);
 
         $katLampu = Kategori::firstOrCreate(['nama_kategori' => 'Lampu PJU Mati'], [
+            'dinas_terkait' => 'Dinas Perhubungan Kabupaten Bandung',
             'ikon' => '💡',
             'warna' => '#EAB308',
         ]);
+
+        $this->call(DinasSeeder::class);
 
         // ──────────────────────────────
         // 4. Data Master Transportasi Umum (FR-21 s/d FR-26)

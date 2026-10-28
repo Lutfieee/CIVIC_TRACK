@@ -13,9 +13,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             {{-- Left Content --}}
             <div class="lg:col-span-7 text-center lg:text-left">
-                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-100/80 text-indigo-700 text-xs font-bold mb-5 shadow-xs">
-                    🌟 Platform Terintegrasi • Pelaporan Masalah & Transportasi (SDG 11)
-                </div>
+
 
                 <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 tracking-tight leading-[1.2] mb-6">
                     Dasbor Pelaporan Masalah Wilayah & <span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Pemantauan Transportasi Umum</span>
@@ -78,7 +76,7 @@
                                 <span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
                                 <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
                             </div>
-                            <span class="text-gray-400 font-mono text-[11px]">dasbor-sigap.live</span>
+                            <span class="text-gray-400 font-mono text-[11px]">dasbor-civictack.live</span>
                             <span class="text-emerald-400 font-bold text-[10px] bg-emerald-950 px-2 py-0.5 rounded-full border border-emerald-800">TERHUBUNG</span>
                         </div>
 
@@ -120,7 +118,7 @@
 
                         <div class="pt-3 border-t border-gray-800 flex items-center justify-between text-[11px] text-gray-400">
                             <span>Sistem Transparansi Pelayanan Publik</span>
-                            <span class="text-indigo-400 font-semibold">SIGAP 2026</span>
+                            <span class="text-indigo-400 font-semibold">CIVIC TRACK</span>
                         </div>
                     </div>
                 </div>

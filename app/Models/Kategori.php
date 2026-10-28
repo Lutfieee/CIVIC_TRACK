@@ -9,7 +9,19 @@ class Kategori extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nama_kategori', 'ikon', 'warna'];
+    const DINAS_LIST = [
+        'Dinas Lingkungan Hidup Kabupaten Bandung',
+        'Dinas Pekerjaan Umum dan Tata Ruang (DPUTR) Kabupaten Bandung',
+        'Badan Penanggulangan Bencana Daerah (BPBD)',
+        'Dinas Perhubungan Kabupaten Bandung',
+    ];
+
+    protected $fillable = [
+        'nama_kategori',
+        'dinas_terkait',
+        'ikon',
+        'warna'
+    ];
 
     public function laporans()
     {

@@ -15,6 +15,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'instansi',
         'is_active',
     ];
 
@@ -59,8 +60,18 @@ class User extends Authenticatable
         return $this->role === 'admin';
     }
 
+    public function isDinas(): bool
+    {
+        return $this->role === 'dinas';
+    }
+
     public function isWarga(): bool
     {
         return $this->role === 'warga';
+    }
+
+    public function isAdminOrDinas(): bool
+    {
+        return in_array($this->role, ['admin', 'dinas']);
     }
 }

@@ -16,22 +16,29 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        $user = Auth::user();
+        $isDinas = $user && $user->isDinas() && $user->instansi;
+        $scopeDinas = fn($q) => $isDinas ? $q->whereHas('kategori', fn($k) => $k->where('dinas_terkait', $user->instansi)) : $q;
+
         $stats = [
-            'total_laporan' => Laporan::count(),
-            'pending' => Laporan::where('status', 'pending')->count(),
-            'diverifikasi' => Laporan::where('status', 'diverifikasi')->count(),
-            'diproses' => Laporan::where('status', 'diproses')->count(),
-            'selesai' => Laporan::where('status', 'selesai')->count(),
-            'ditolak' => Laporan::where('status', 'ditolak')->count(),
+            'total_laporan' => $scopeDinas(Laporan::query())->count(),
+            'pending' => $scopeDinas(Laporan::where('status', 'pending'))->count(),
+            'diverifikasi' => $scopeDinas(Laporan::where('status', 'diverifikasi'))->count(),
+            'diproses' => $scopeDinas(Laporan::where('status', 'diproses'))->count(),
+            'selesai' => $scopeDinas(Laporan::where('status', 'selesai'))->count(),
+            'ditolak' => $scopeDinas(Laporan::where('status', 'ditolak'))->count(),
             'total_transportasi' => Transportasi::where('is_active', true)->count(),
             'total_wilayah' => Wilayah::count(),
             'total_warga' => User::where('role', 'warga')->count(),
-            'total_admin' => User::where('role', 'admin')->count(),
+            'total_admin' => User::whereIn('role', ['admin', 'dinas'])->count(),
         ];
 
         // Chart data: laporan per kategori
-        $perKategori = Laporan::with('kategori')
-            ->selectRaw('kategori_id, count(*) as total')
+        $katQuery = Laporan::with('kategori');
+        if ($isDinas) {
+            $katQuery->whereHas('kategori', fn($k) => $k->where('dinas_terkait', $user->instansi));
+        }
+        $perKategori = $katQuery->selectRaw('kategori_id, count(*) as total')
             ->groupBy('kategori_id')
             ->get()
             ->map(fn($l) => [
@@ -41,16 +48,20 @@ class DashboardController extends Controller
             ]);
 
         // Chart data: laporan per bulan (6 bulan terakhir)
-        $perBulan = Laporan::selectRaw("DATE_FORMAT(created_at, '%Y-%m') as bulan, count(*) as total")
-            ->where('created_at', '>=', now()->subMonths(6))
+        $bulanQuery = Laporan::where('created_at', '>=', now()->subMonths(6));
+        if ($isDinas) {
+            $bulanQuery->whereHas('kategori', fn($k) => $k->where('dinas_terkait', $user->instansi));
+        }
+        $perBulan = $bulanQuery->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as bulan, count(*) as total")
             ->groupBy('bulan')
             ->orderBy('bulan')
             ->get();
 
-        $laporanTerbaru = Laporan::with(['user', 'kategori'])
-            ->latest()
-            ->take(10)
-            ->get();
+        $lapQuery = Laporan::with(['user', 'kategori'])->latest();
+        if ($isDinas) {
+            $lapQuery->whereHas('kategori', fn($k) => $k->where('dinas_terkait', $user->instansi));
+        }
+        $laporanTerbaru = $lapQuery->take(10)->get();
 
         return view('admin.dashboard', compact('stats', 'perKategori', 'perBulan', 'laporanTerbaru'));
     }
@@ -60,7 +71,12 @@ class DashboardController extends Controller
      */
     public function kelolaLaporan(Request $request)
     {
+        $user = Auth::user();
         $query = Laporan::with(['user', 'kategori']);
+
+        if ($user && $user->isDinas() && $user->instansi) {
+            $query->whereHas('kategori', fn($k) => $k->where('dinas_terkait', $user->instansi));
+        }
 
         if ($request->filled('q')) {
             $q = $request->q;
@@ -92,10 +108,12 @@ class DashboardController extends Controller
 
     public function antrian()
     {
-        $laporans = Laporan::with(['user', 'kategori'])
-            ->where('status', 'pending')
-            ->latest()
-            ->paginate(15);
+        $user = Auth::user();
+        $query = Laporan::with(['user', 'kategori'])->where('status', 'pending');
+        if ($user && $user->isDinas() && $user->instansi) {
+            $query->whereHas('kategori', fn($k) => $k->where('dinas_terkait', $user->instansi));
+        }
+        $laporans = $query->latest()->paginate(15);
 
         return view('admin.verifikasi.antrian', compact('laporans'));
     }

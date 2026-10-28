@@ -37,7 +37,8 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
             'password' => ['required', Password::min(8)],
-            'role' => 'required|in:warga,admin',
+            'role' => 'required|in:warga,admin,dinas',
+            'instansi' => 'nullable|string|max:255',
             'is_active' => 'boolean',
         ]);
 
@@ -46,6 +47,7 @@ class UserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
+            'instansi' => $request->instansi,
             'is_active' => $request->boolean('is_active', true),
         ]);
 
@@ -62,7 +64,8 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
-            'role' => 'required|in:warga,admin',
+            'role' => 'required|in:warga,admin,dinas',
+            'instansi' => 'nullable|string|max:255',
             'is_active' => 'boolean',
             'password' => ['nullable', Password::min(8)],
         ]);
@@ -71,6 +74,7 @@ class UserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'role' => $request->role,
+            'instansi' => $request->instansi,
             'is_active' => $request->boolean('is_active'),
         ];
 

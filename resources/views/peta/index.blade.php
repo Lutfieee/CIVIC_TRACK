@@ -33,7 +33,11 @@
                 <option value="tinggi">Tinggi</option>
             </select>
             <button id="btn-filter" class="text-sm px-4 py-1.5 rounded-lg bg-gradient-to-r from-[#6C3DE6] to-[#3B82F6] text-white font-medium hover:shadow-md transition-all">Terapkan</button>
-            <span id="count-info" class="text-xs text-gray-500 ml-auto"></span>
+            <a href="{{ route('warga.laporan.cepat') }}"
+               class="text-xs px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-purple-600 text-white font-bold hover:shadow-md hover:scale-105 transition-all flex items-center gap-1 shadow-xs ml-1">
+                <span>⚡</span> <span>Laporan Cepat</span>
+            </a>
+            <span id="count-info" class="text-xs text-gray-500 ml-auto font-medium"></span>
             <span class="text-xs text-gray-400 italic hidden sm:inline">&#128161; Klik area kosong untuk membuat laporan baru</span>
         </div>
     </div>
@@ -126,6 +130,10 @@ function loadMarkers() {
                     ? '<a href="' + _createUrl + '?lat=' + l.latitude + '&lng=' + l.longitude + '" style="display:flex;align-items:center;justify-content:center;gap:5px;background:#f5f3ff;color:#6C3DE6;border:1.5px solid #ddd6fe;padding:7px 14px;border-radius:10px;font-size:11px;font-weight:600;text-decoration:none;margin-top:6px">&#10133; Buat Laporan di Titik Ini</a>'
                     : '';
 
+                var dinasHtml = l.dinas
+                    ? '<div style="font-size:10px;color:#1e40af;background:#eff6ff;padding:2px 7px;border-radius:6px;margin-top:3px;font-weight:600;display:inline-block">🏛️ ' + l.dinas + '</div>'
+                    : '';
+
                 var popup =
                     '<div class="popup-inner">' +
                     fotoHtml +
@@ -136,6 +144,7 @@ function loadMarkers() {
                                 '<strong style="font-size:13px;color:#111827">' + l.kategori + '</strong>' +
                             '</div>' +
                             '<p style="font-size:12px;color:#6b7280;margin:0">&#128205; ' + l.wilayah + '</p>' +
+                            dinasHtml +
                         '</div>' +
                         '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0">' +
                             statusBadge(l.status, l.status_label) +
@@ -213,5 +222,16 @@ map.on('click', function(e) {
 
 document.getElementById('btn-filter').addEventListener('click', loadMarkers);
 loadMarkers();
+
+window.addEventListener('resize', function() {
+    if (typeof map !== 'undefined' && map) {
+        map.invalidateSize();
+    }
+});
+setTimeout(function() {
+    if (typeof map !== 'undefined' && map) {
+        map.invalidateSize();
+    }
+}, 500);
 </script>
 @endpush

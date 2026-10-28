@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Dashboard') — SIGAP</title>
+    <title>@yield('title', 'Dashboard') — CIVIC TRACK</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -68,7 +68,7 @@
                     S
                 </div>
                 <div class="flex items-baseline gap-2">
-                    <span class="font-bold text-xl bg-gradient-to-r from-[#6C3DE6] to-[#3B82F6] bg-clip-text text-transparent">SIGAP</span>
+                    <span class="font-bold text-xl bg-gradient-to-r from-[#6C3DE6] to-[#3B82F6] bg-clip-text text-transparent">CIVIC TRACK</span>
                     <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-purple-50 text-[#6C3DE6] capitalize">{{ auth()->user()->role }}</span>
                 </div>
             </a>
@@ -83,18 +83,25 @@
 
         {{-- Sidebar Navigation --}}
         <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-            @if(auth()->user()->isAdmin())
-                {{-- 1. Menu Admin --}}
-                <div class="pt-1 pb-1 px-3 text-[10px] font-bold uppercase tracking-wider text-gray-400">Menu Admin</div>
-                <x-sidebar-link href="{{ route('admin.dashboard') }}" icon="📊" label="Dashboard" :active="request()->routeIs('admin.dashboard')" />
-                <x-sidebar-link href="{{ route('admin.laporan.index') }}" icon="📁" label="Semua Laporan" :active="request()->routeIs('admin.laporan.index')" />
-                <x-sidebar-link href="{{ route('admin.antrian') }}" icon="⏳" label="Antrian Verifikasi" :active="request()->routeIs('admin.antrian')" />
-                <x-sidebar-link href="{{ route('admin.riwayat') }}" icon="📋" label="Riwayat Verifikasi" :active="request()->routeIs('admin.riwayat')" />
+            @if(auth()->user()->isAdminOrDinas())
+                {{-- 1. Menu Admin / Dinas --}}
+                <div class="pt-1 pb-1 px-3 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                    {{ auth()->user()->isDinas() ? 'Menu Petugas Dinas' : 'Menu Admin' }}
+                </div>
+                @if(auth()->user()->isDinas() && auth()->user()->instansi)
+                    <div class="mx-3 mb-2 px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-100 text-[11px] font-semibold text-blue-700 leading-tight">
+                        🏛️ {{ auth()->user()->instansi }}
+                    </div>
+                @endif
+                <x-sidebar-link href="{{ route('admin.dashboard') }}" icon="" label="Dashboard" :active="request()->routeIs('admin.dashboard')" />
+                <x-sidebar-link href="{{ route('admin.laporan.index') }}" icon="" label="Semua Laporan" :active="request()->routeIs('admin.laporan.index')" />
+                <x-sidebar-link href="{{ route('admin.antrian') }}" icon="" label="Antrian Verifikasi" :active="request()->routeIs('admin.antrian')" />
+                <x-sidebar-link href="{{ route('admin.riwayat') }}" icon="" label="Riwayat Verifikasi" :active="request()->routeIs('admin.riwayat')" />
 
                 {{-- Permohonan Hapus dengan badge count --}}
                 <a href="{{ route('admin.permohonan-hapus') }}"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('admin.permohonan-hapus') ? 'bg-gradient-to-r from-purple-50 to-blue-50 text-[#6C3DE6] font-semibold shadow-xs' : 'text-gray-700 hover:bg-gray-50 hover:text-[#6C3DE6]' }}">
-                    <span class="text-base">🗑️</span>
+                    <span class="text-base"></span>
                     <span class="flex-1">Permohonan Hapus</span>
                     @php $jumlahHapus = \App\Models\Laporan::where('status_penghapusan', 'menunggu_verifikasi')->count(); @endphp
                     @if($jumlahHapus > 0)
@@ -102,24 +109,26 @@
                     @endif
                 </a>
 
-                <div class="pt-3 pb-1 px-3 text-[10px] font-bold uppercase tracking-wider text-gray-400">Data Master & Operasional</div>
-                <x-sidebar-link href="{{ route('admin.transportasi.index') }}" icon="🚌" label="Kelola Transportasi" :active="request()->routeIs('admin.transportasi.*')" />
-                <x-sidebar-link href="{{ route('admin.wilayah.index') }}" icon="🗺️" label="Kelola Wilayah" :active="request()->routeIs('admin.wilayah.*')" />
-                <x-sidebar-link href="{{ route('admin.kategori.index') }}" icon="🏷️" label="Kategori Masalah" :active="request()->routeIs('admin.kategori.*')" />
-                <x-sidebar-link href="{{ route('admin.users.index') }}" icon="👥" label="Pengguna & Akses" :active="request()->routeIs('admin.users.*')" />
+                @if(auth()->user()->isAdmin())
+                    <div class="pt-3 pb-1 px-3 text-[10px] font-bold uppercase tracking-wider text-gray-400">Data Master & Operasional</div>
+                    <x-sidebar-link href="{{ route('admin.transportasi.index') }}" icon="" label="Kelola Transportasi" :active="request()->routeIs('admin.transportasi.*')" />
+                    <x-sidebar-link href="{{ route('admin.wilayah.index') }}" icon="" label="Kelola Wilayah" :active="request()->routeIs('admin.wilayah.*')" />
+                    <x-sidebar-link href="{{ route('admin.kategori.index') }}" icon="" label="Kategori Masalah" :active="request()->routeIs('admin.kategori.*')" />
+                    <x-sidebar-link href="{{ route('admin.users.index') }}" icon="" label="Pengguna & Akses" :active="request()->routeIs('admin.users.*')" />
+                @endif
             @else
                 {{-- 1. Layanan Warga --}}
                 <div class="pt-1 pb-1 px-3 text-[10px] font-bold uppercase tracking-wider text-gray-400">Layanan Warga</div>
-                <x-sidebar-link href="{{ route('warga.laporan.index') }}" icon="📋" label="Laporan Saya" :active="request()->routeIs('warga.laporan.index')" />
-                <x-sidebar-link href="{{ route('warga.laporan.create') }}" icon="➕" label="Buat Laporan" :active="request()->routeIs('warga.laporan.create')" />
+                <x-sidebar-link href="{{ route('warga.laporan.index') }}" icon="" label="Laporan Saya" :active="request()->routeIs('warga.laporan.index')" />
+                <x-sidebar-link href="{{ route('warga.laporan.create') }}" icon="" label="Buat Laporan" :active="request()->routeIs('warga.laporan.create')" />
             @endif
 
             {{-- 2. Fitur Publik --}}
             <div class="pt-3 pb-1 px-3 text-[10px] font-bold uppercase tracking-wider text-gray-400">Fitur Publik</div>
-            <x-sidebar-link href="{{ route('peta.index') }}" icon="🗺️" label="Peta Masalah" :active="request()->routeIs('peta.*')" />
-            <x-sidebar-link href="{{ route('transportasi.index') }}" icon="🚌" label="Transportasi Umum" :active="request()->routeIs('transportasi.*')" />
-            <x-sidebar-link href="{{ route('informasi-layanan.index') }}" icon="📖" label="Panduan Layanan" :active="request()->routeIs('informasi-layanan.*')" />
-            <x-sidebar-link href="{{ route('home') }}" icon="🏠" label="Beranda Publik" :active="request()->routeIs('home')" />
+            <x-sidebar-link href="{{ route('peta.index') }}" icon="" label="Peta Masalah" :active="request()->routeIs('peta.*')" />
+            <x-sidebar-link href="{{ route('transportasi.index') }}" icon="" label="Transportasi Umum" :active="request()->routeIs('transportasi.*')" />
+            <x-sidebar-link href="{{ route('informasi-layanan.index') }}" icon="" label="Panduan Layanan" :active="request()->routeIs('informasi-layanan.*')" />
+            <x-sidebar-link href="{{ route('home') }}" icon="" label="Beranda Publik" :active="request()->routeIs('home')" />
         </nav>
 
         {{-- Sidebar Footer --}}
@@ -249,7 +258,7 @@
                         @endif
                         <a href="{{ route('home') }}"
                            class="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#6C3DE6] transition-colors">
-                            <span>🏠</span> Beranda SIGAP
+                            <span>🏠</span> Beranda CIVIC TRACK
                         </a>
                         <div class="border-t border-gray-100 my-1"></div>
                         <form method="POST" action="{{ route('logout') }}">

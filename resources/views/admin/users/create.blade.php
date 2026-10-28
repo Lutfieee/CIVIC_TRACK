@@ -33,10 +33,21 @@
                        placeholder="Min. 8 karakter">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">Role *</label>
-                <select name="role" required class="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#6C3DE6]/30 focus:border-[#6C3DE6]">
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Role / Aktor *</label>
+                <select name="role" id="role-select" required onchange="toggleInstansiField(this.value)"
+                        class="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#6C3DE6]/30 focus:border-[#6C3DE6] bg-white">
                     <option value="warga" {{ old('role') === 'warga' ? 'selected' : '' }}>Warga</option>
-                    <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Admin</option>
+                    <option value="dinas" {{ old('role') === 'dinas' ? 'selected' : '' }}>Petugas Dinas</option>
+                    <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Admin / Pemerintah Pusat</option>
+                </select>
+            </div>
+            <div id="instansi-group" class="{{ old('role') === 'dinas' ? '' : 'hidden' }}">
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Instansi Dinas Terkait</label>
+                <select name="instansi" class="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#6C3DE6]/30 focus:border-[#6C3DE6] bg-white">
+                    <option value="">-- Pilih Dinas Terkait --</option>
+                    @foreach(\App\Models\Kategori::DINAS_LIST as $dinas)
+                        <option value="{{ $dinas }}" {{ old('instansi') === $dinas ? 'selected' : '' }}>{{ $dinas }}</option>
+                    @endforeach
                 </select>
             </div>
             <label class="flex items-center gap-3 cursor-pointer">
@@ -51,3 +62,16 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+function toggleInstansiField(role) {
+    const group = document.getElementById('instansi-group');
+    if (role === 'dinas') {
+        group.classList.remove('hidden');
+    } else {
+        group.classList.add('hidden');
+    }
+}
+</script>
+@endpush

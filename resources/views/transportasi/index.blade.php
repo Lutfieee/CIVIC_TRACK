@@ -8,7 +8,7 @@
         {{-- Header Section --}}
         <div class="text-center max-w-3xl mx-auto mb-10">
             <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-100/80 text-indigo-700 text-xs font-semibold mb-3">
-                🚌 Pemantauan Transportasi Terpadu (SDG 11.2)
+                🚌 Pemantauan Transportasi Terpadu
             </div>
             <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
                 Informasi & Pemantauan Transportasi Umum
