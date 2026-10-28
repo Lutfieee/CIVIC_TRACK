@@ -124,3 +124,13 @@ Mengadopsi referensi *Outcrowd UI*:
 - **Palet Warna**: Gradien modern Deep Purple ke Vivid Blue (`#6C3DE6` to `#3B82F6`).
 - **Tipografi**: Inter (Google Fonts) dengan *weight* tebal dan hirarki visual tegas.
 - **Komponen**: Card `rounded-2xl` dan `rounded-3xl`, glassmorphism halus, micro-interaction hover, serta penanda status berbasis warna dinamis.
+
+## Kelola Pengguna (SCRUM-14)
+
+Fitur ini memungkinkan admin mengelola akun pengguna:
+- Menambah pengguna baru
+- Mengubah data pengguna
+- Menghapus pengguna
+- Pembatasan akses berdasarkan role
+
+Cara mengakses: login sebagai admin, lalu buka menu Pengguna.
